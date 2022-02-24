@@ -27,6 +27,7 @@ docker push 924586450630.dkr.ecr.us-east-1.amazonaws.com/batch-job-template:late
 aws batch submit-job \
 --job-name getting-started-job-$(date '+%Y-%m-%d--%H-%M-%S') \
 --job-queue getting-started-job-queue \
---job-definition getting-started-job-definition
+--job-definition getting-started-job-definition \
+--parameters person=Haywood
 ```
 
