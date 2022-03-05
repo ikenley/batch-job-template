@@ -25,9 +25,26 @@ docker push 924586450630.dkr.ecr.us-east-1.amazonaws.com/batch-job-template:late
 # Submit a job
 
 aws batch submit-job \
---job-name getting-started-job-$(date '+%Y-%m-%d--%H-%M-%S') \
---job-queue getting-started-job-queue \
---job-definition getting-started-job-definition \
+--job-name ik-dev-batch-example-$(date '+%Y-%m-%d--%H-%M-%S') \
+--job-queue ik-dev-batch-example \
+--job-definition ik-dev-batch-example \
 --parameters person=Haywood
+
+# Describe AWS resources
+mkdir build
+aws batch describe-compute-environments > ./build/compute_environments.json
+aws batch describe-job-queues > ./build/job_queues.json
+aws batch describe-job-definitions > ./build/job_definitions.json
 ```
 
+---
+
+## Terraform
+
+This project uses Terraform to manage AWS resources. It depends on [template-infrastructure](https://github.com/ikenley/template-infrastructure) for foundational infrastructure (e.g. VPC subnets).
+
+```
+cd terraform/dev
+terraform init
+terraform apply
+```
