@@ -83,6 +83,32 @@
                 "arn:aws:ssm:*:*:parameter/docker/*",
                 "arn:aws:ssm:*:*:parameter/${name}/codebuild/*"
             ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "batch:Describe*",
+                "batch:List*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "batch:RegisterJobDefinition"
+            ],
+            "Resource": [
+                "arn:aws:batch:*:*:job-definition/${job_definition}"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Resource": [
+                "${batch_job_role_arn}"
+            ]
         }
     ]
 }

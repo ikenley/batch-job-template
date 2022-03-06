@@ -203,8 +203,9 @@ resource "aws_iam_role" "codebuild" {
 EOF
 }
 
-resource "aws_iam_role_policy" "codebuild_policy" {
-  role = aws_iam_role.codebuild.name
+resource "aws_iam_policy" "codebuild" {
+  name        = "${local.id}-codebuild-policy"
+  description = "Codebuild policy for ${local.id}"
 
   policy = templatefile("${path.module}/codebuild_policy.tpl", {
     account_id                   = local.account_id
@@ -212,5 +213,12 @@ resource "aws_iam_role_policy" "codebuild_policy" {
     ecr_arns                     = jsonencode(aws_ecr_repository.this.*.arn)
     codebuild_project_name       = local.codebuild_project_name
     name                         = var.name
+    job_definition               = aws_batch_job_definition.this.name
+    batch_job_role_arn           = aws_iam_role.ecs_task_execution_role.arn
   })
+}
+
+resource "aws_iam_role_policy_attachment" "codebuild" {
+  role       = aws_iam_role.codebuild.id
+  policy_arn = aws_iam_policy.codebuild.arn
 }

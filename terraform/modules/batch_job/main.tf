@@ -142,7 +142,7 @@ resource "aws_batch_job_definition" "this" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "tf_test_batch_exec_role"
+  name               = "${local.id}-ecs-task-execution"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
