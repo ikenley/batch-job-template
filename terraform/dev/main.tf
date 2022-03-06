@@ -56,7 +56,7 @@ module "batch_job_example" {
   vpc_cidr = data.aws_ssm_parameter.vpc_cidr.value
   subnets  = split(",", data.aws_ssm_parameter.subnets.value)
 
-  job_parameters = { "person" : "HAL" }
+  job_parameters = { person = "HAL" }
   job_command    = ["Ref::person"]
 
   code_pipeline_s3_bucket_name = data.aws_ssm_parameter.code_pipeline_s3_bucket_name.value

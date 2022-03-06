@@ -162,6 +162,11 @@ resource "aws_codebuild_project" "this" {
       value = local.account_id
     }
 
+    environment_variable {
+      name  = "JOB_DEFINITION"
+      value = aws_batch_job_definition.this.name
+    }
+
     dynamic "environment_variable" {
       for_each = aws_ecr_repository.this.*
       content {

@@ -94,7 +94,7 @@ resource "aws_batch_job_queue" "this" {
 # Job Defnition
 # ------------------------------------------------------------------------------
 
-resource "aws_batch_job_definition" "test" {
+resource "aws_batch_job_definition" "this" {
   name = local.id
   type = "container"
 
@@ -103,7 +103,7 @@ resource "aws_batch_job_definition" "test" {
   parameters = var.job_parameters
 
   container_properties = jsonencode({
-    image            = "924586450630.dkr.ecr.us-east-1.amazonaws.com/batch-job-template:latest",
+    image            = "${aws_ecr_repository.this[0].repository_url}:latest",
     command          = var.job_command,
     executionRoleArn = aws_iam_role.ecs_task_execution_role.arn,
     volumes          = [],

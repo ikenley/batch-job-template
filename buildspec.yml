@@ -29,7 +29,21 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$MAIN_IMAGE_REPO_NAME:$IMAGE_TAG
-      - printf '[{"name":"%s","imageUri":"%s"},{"name":"%s","imageUri":"%s"}]' $MAIN_IMAGE_REPO_NAME $IMAGE_URI $API_IMAGE_REPO_NAME $API_IMAGE_URI > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' $MAIN_IMAGE_REPO_NAME $IMAGE_URI > imagedefinitions.json
       - cat imagedefinitions.json
+      - echo "Revising Batch Job definition"
+      - |
+        OLD_JOB_DEFINITION=$(aws batch describe-job-definitions \
+          --job-definition-name $JOB_DEFINITION \
+          | jq -c '.jobDefinitions[0]')
+      - echo "OLD_JOB_DEFINITION=$OLD_JOB_DEFINITION"
+      - |
+        NEW_JOB_DEFINITION=$(echo $OLD_JOB_DEFINITION \
+          | jq -c --arg image "$IMAGE_URI" '.containerProperties.image = $image' \
+          | jq -c 'del(.jobDefinitionArn)' \
+          | jq -c 'del(.revision)' \
+          | jq -c 'del(.status)')
+      - echo "NEW_JOB_DEFINITION=$NEW_JOB_DEFINITION"
+      - aws batch register-job-definition --type container --job-definition $JOB_DEFINITION --cli-input-json "$NEW_JOB_DEFINITION"
 artifacts:
   files: imagedefinitions.json
