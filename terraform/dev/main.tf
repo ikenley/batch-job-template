@@ -45,7 +45,7 @@ data "aws_ssm_parameter" "code_pipeline_s3_bucket_name" {
 }
 
 module "batch_job_example" {
-  source = "../modules/batch_job"
+  source = "../modules/batch_job_example"
 
   namespace   = local.namespace
   environment = local.env

@@ -106,6 +106,7 @@ resource "aws_batch_job_definition" "this" {
     image            = "${aws_ecr_repository.this[0].repository_url}:latest",
     command          = var.job_command,
     executionRoleArn = aws_iam_role.ecs_task_execution_role.arn,
+    jobRoleArn       = aws_iam_role.ecs_task_role.arn,
     volumes          = [],
     environment      = [],
     mountPoints      = [],
@@ -142,22 +143,42 @@ resource "aws_batch_job_definition" "this" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "${local.id}-ecs-task-execution"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
-}
+  name = "${local.id}-ecs-task-execution"
 
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "${local.id}-ecs-task"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      },
+    ]
+  })
 }
