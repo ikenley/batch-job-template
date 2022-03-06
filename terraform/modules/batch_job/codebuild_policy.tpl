@@ -95,7 +95,8 @@
         {
             "Effect": "Allow",
             "Action": [
-                "batch:RegisterJobDefinition"
+                "batch:RegisterJobDefinition",
+                "batch:TagResource"
             ],
             "Resource": [
                 "arn:aws:batch:*:*:job-definition/${job_definition}"
