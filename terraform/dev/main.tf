@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Create the core VPC network infrastructure
+# Create AWS Batch Job for a given environment
 # ------------------------------------------------------------------------------
 
 locals {
@@ -28,7 +28,6 @@ provider "aws" {
 # Batch job - example
 #
 
-# Note these should be private subnets in a production environment
 data "aws_ssm_parameter" "vpc_id" {
   name = "/${local.namespace}/${local.env}/core/vpc_id"
 }
@@ -39,6 +38,10 @@ data "aws_ssm_parameter" "vpc_cidr" {
 
 data "aws_ssm_parameter" "subnets" {
   name = "/${local.namespace}/${local.env}/core/private_subnets"
+}
+
+data "aws_ssm_parameter" "code_pipeline_s3_bucket_name" {
+  name = "/${local.namespace}/${local.env}/core/code_pipeline_s3_bucket_name"
 }
 
 module "batch_job_example" {
@@ -55,6 +58,11 @@ module "batch_job_example" {
 
   job_parameters = { "person" : "HAL" }
   job_command    = ["Ref::person"]
+
+  code_pipeline_s3_bucket_name = data.aws_ssm_parameter.code_pipeline_s3_bucket_name.value
+  source_full_repository_id    = "ikenley/batch-job-template"
+  source_branch_name           = "main"
+  codestar_connection_arn      = "arn:aws:codestar-connections:us-east-1:924586450630:connection/73e9e607-3dc4-4a4d-9f81-a82c0030de6d"
 
   tags = {}
 }

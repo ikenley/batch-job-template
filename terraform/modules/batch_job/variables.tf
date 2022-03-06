@@ -37,6 +37,12 @@ variable "job_command" {
   default     = []
 }
 
+variable "container_names" {
+  type        = list(string)
+  description = "Names of each container. Additional resources are created for each container (e.g. ECR repos)"
+  default     = ["main"]
+}
+
 variable "container_vcpu" {
   default = "1"
 }
@@ -44,3 +50,9 @@ variable "container_vcpu" {
 variable "container_memory" {
   default = "2048"
 }
+
+# CodePipeline
+variable "code_pipeline_s3_bucket_name" {}
+variable "source_full_repository_id" {}
+variable "source_branch_name" {}
+variable "codestar_connection_arn" {}

@@ -8,6 +8,8 @@ locals {
   })
   account_id = data.aws_caller_identity.current.account_id
   id         = join("-", [var.namespace, var.environment, var.name])
+  # Need to create this locally to avoid circular dep
+  codebuild_project_name = local.id
 }
 
 # ------------------------------------------------------------------------------
